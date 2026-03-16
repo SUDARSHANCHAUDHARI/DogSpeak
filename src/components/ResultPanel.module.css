@@ -1,0 +1,228 @@
+.result {
+  margin-top: 32px;
+  animation: fadeSlideUp 0.4s ease forwards;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.resultActions {
+  display: flex;
+  gap: 8px;
+}
+
+.actionBtn {
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  padding: 5px 12px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--muted);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.actionBtn:hover {
+  color: var(--text);
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ok   { background: var(--ok-bg);   color: var(--ok); }
+.info { background: var(--info-bg); color: var(--info); }
+.warn { background: var(--warn-bg); color: var(--warn); }
+.critical { background: var(--crit-bg); color: var(--crit); }
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@keyframes critpulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.headline {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.explanation {
+  font-size: 15px;
+  color: #a8a8bc;
+  line-height: 1.8;
+  margin-bottom: 28px;
+  max-width: 640px;
+}
+
+.factGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.factCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  transition: border-color 0.2s;
+}
+
+.factCard:hover {
+  border-color: var(--border2);
+}
+
+.factLabel {
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.factValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.actionBox {
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  font-size: 14px;
+  line-height: 1.7;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.actionBox strong {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.actionBox p {
+  margin: 0;
+}
+
+.action_ok       { background: var(--ok-bg);   border: 1px solid rgba(62,207,142,0.2);  color: #80e8b8; }
+.action_info     { background: var(--info-bg); border: 1px solid rgba(91,156,246,0.2);  color: #99c0ff; }
+.action_warn     { background: var(--warn-bg); border: 1px solid rgba(245,166,35,0.2);  color: #ffd080; }
+.action_critical { background: var(--crit-bg); border: 1px solid rgba(255,87,87,0.2);   color: #ffaaaa; }
+
+.actionIcon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.errorBox {
+  margin-top: 24px;
+  background: var(--crit-bg);
+  border: 1px solid rgba(255, 87, 87, 0.2);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  font-size: 14px;
+  color: #ffaaaa;
+  animation: fadeSlideUp 0.3s ease forwards;
+}
+
+/* Loading skeleton */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.skelBadge,
+.skelHeadline,
+.skelLine,
+.skelCard {
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skelBadge {
+  width: 100px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+.skelHeadline {
+  width: 70%;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.skelLine {
+  width: 100%;
+  height: 16px;
+}
+
+.skelLineShort {
+  width: 60%;
+}
+
+.skelGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.skelCard {
+  height: 72px;
+  border-radius: var(--radius-md);
+}
+
+.streamingHint {
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  color: var(--faint);
+  margin-top: 4px;
+}

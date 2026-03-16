@@ -1,0 +1,87 @@
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 24px;
+  transition: opacity 0.3s;
+}
+
+.saved {
+  opacity: 0.6;
+}
+
+.label {
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+  min-width: 0;
+}
+
+.input:focus {
+  border-color: var(--accent);
+}
+
+.toggleBtn,
+.saveBtn,
+.clearBtn {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--text);
+  font-size: 13px;
+  white-space: nowrap;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.toggleBtn:hover,
+.saveBtn:hover {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.clearBtn:hover {
+  background: var(--crit-bg);
+  border-color: rgba(255, 87, 87, 0.3);
+  color: var(--crit);
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--faint);
+  margin-top: 8px;
+}
+
+.hint a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.hint a:hover {
+  color: var(--accent);
+}
