@@ -14,12 +14,10 @@ function parseApiError(status, errorData) {
  * @param {string} datadogInput - Raw Datadog content pasted by the user
  * @param {string} audiencePrompt - Audience description for the AI
  * @param {string} apiKey - Anthropic API key
- * @param {function} onStream - Called with accumulated text as it streams in
+ * @param {function} onStream - Called with accumulated text length as it streams in
  * @returns {Promise<TranslationResult>}
  */
 export async function translateDatadog(datadogInput, audiencePrompt, apiKey, onStream) {
-  const prompt = buildPrompt(datadogInput, audiencePrompt)
-
   const headers = {
     'Content-Type': 'application/json',
     'anthropic-version': '2023-06-01',
@@ -34,7 +32,8 @@ export async function translateDatadog(datadogInput, audiencePrompt, apiKey, onS
       model: MODEL,
       max_tokens: 1000,
       stream: true,
-      messages: [{ role: 'user', content: prompt }],
+      system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: buildUserMessage(datadogInput, audiencePrompt) }],
     }),
   })
 
@@ -55,7 +54,7 @@ export async function translateDatadog(datadogInput, audiencePrompt, apiKey, onS
 
     buffer += decoder.decode(value, { stream: true })
     const lines = buffer.split('\n')
-    buffer = lines.pop() // keep incomplete line
+    buffer = lines.pop()
 
     for (const line of lines) {
       if (!line.startsWith('data: ')) continue
@@ -64,41 +63,41 @@ export async function translateDatadog(datadogInput, audiencePrompt, apiKey, onS
       try {
         const event = JSON.parse(data)
         if (event.type === 'error') {
-          throw new Error(event.error?.message || 'Stream error')
+          throw new Error(event.error?.message || 'Stream error from API')
         }
         if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
           accumulated += event.delta.text
           onStream?.(accumulated)
         }
       } catch (e) {
-        if (e.message === 'Stream error' || e.message.includes('Stream error')) throw e
-        // ignore JSON parse errors on malformed chunks
+        if (e.message?.includes('Stream error')) throw e
+        // ignore JSON parse errors on malformed SSE chunks
       }
     }
   }
 
-  // Extract JSON from the accumulated text (handles any stray backtick wrappers)
   const jsonMatch = accumulated.match(/\{[\s\S]*\}/)
-  if (!jsonMatch) throw new Error('Failed to parse AI response. Please try again.')
+  if (!jsonMatch) {
+    const preview = accumulated.slice(0, 120).trim()
+    throw new Error(
+      preview
+        ? `Unexpected AI response: "${preview}${accumulated.length > 120 ? '…' : ''}"`
+        : 'AI returned an empty response. Please try again.'
+    )
+  }
 
   try {
     return JSON.parse(jsonMatch[0])
   } catch {
-    throw new Error('Failed to parse AI response. Please try again.')
+    throw new Error('Failed to parse AI response as JSON. Please try again.')
   }
 }
 
-function buildPrompt(input, audiencePrompt) {
-  return `You are a Datadog monitoring expert who explains technical alerts and metrics in plain, human language.
+const SYSTEM_PROMPT = `You are a Datadog monitoring expert. Your job is to translate Datadog alerts, logs, metrics, monitors, and traces into clear, plain English.
 
-Given this Datadog content:
----
-${input}
----
+Always respond with a single valid JSON object — no markdown, no backticks, no commentary outside the JSON.
 
-Explain it clearly for ${audiencePrompt}.
-
-Respond ONLY with a valid JSON object (no markdown, no backticks, no extra text):
+JSON schema:
 {
   "severity": "ok" | "info" | "warn" | "critical",
   "headline": "One sentence — what is happening RIGHT NOW, in plain English. Max 15 words. Do not start with 'The'.",
@@ -111,4 +110,11 @@ Respond ONLY with a valid JSON object (no markdown, no backticks, no extra text)
   ],
   "action_needed": "What should a human do about this right now? Be specific and direct. If nothing, say: No action needed — this is just informational."
 }`
+
+function buildUserMessage(input, audiencePrompt) {
+  return `Explain the following Datadog content clearly for ${audiencePrompt}:
+
+---
+${input}
+---`
 }

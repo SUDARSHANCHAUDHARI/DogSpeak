@@ -2,6 +2,8 @@ import React, { useRef, useEffect } from 'react'
 import { EXAMPLES, AUDIENCE_OPTIONS } from '../utils/constants'
 import styles from './InputPanel.module.css'
 
+const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform)
+
 export default function InputPanel({ value, audience, loading, onChange, onAudienceChange, onTranslate }) {
   const textareaRef = useRef(null)
 
@@ -21,6 +23,7 @@ export default function InputPanel({ value, audience, loading, onChange, onAudie
   }
 
   const tokenEstimate = Math.ceil(value.length / 4)
+  const tooLong = value.length > 8000
 
   return (
     <div className={styles.wrapper}>
@@ -71,6 +74,13 @@ export default function InputPanel({ value, audience, loading, onChange, onAudie
         </div>
       </div>
 
+      {/* Length warning */}
+      {tooLong && (
+        <p className={styles.lengthWarn}>
+          Input is {value.length.toLocaleString()} chars — consider trimming to the most relevant part to save tokens and improve accuracy.
+        </p>
+      )}
+
       {/* Submit */}
       <button
         className={styles.translateBtn}
@@ -78,8 +88,8 @@ export default function InputPanel({ value, audience, loading, onChange, onAudie
         disabled={loading || !value.trim()}
       >
         {loading && <span className={styles.spinner} />}
-        <span>{loading ? 'Translating...' : 'Translate to plain English'}</span>
-        {!loading && <span className={styles.kbdHint}>⌘↵</span>}
+        <span>{loading ? 'Translating...' : 'Translate to plain English →'}</span>
+        {!loading && <span className={styles.kbdHint}>{isMac ? '⌘↵' : 'Ctrl+↵'}</span>}
       </button>
     </div>
   )

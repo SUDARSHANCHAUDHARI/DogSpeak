@@ -2,16 +2,17 @@ import { useState, useCallback } from 'react'
 
 const API_KEY_STORAGE = 'dogspeak_key'
 
-export function useApiKey() {
-  const [apiKey, setApiKey] = useState(() => {
-    try {
-      return localStorage.getItem(API_KEY_STORAGE) || ''
-    } catch {
-      return ''
-    }
-  })
+function readStoredKey() {
+  try {
+    return localStorage.getItem(API_KEY_STORAGE) || ''
+  } catch {
+    return ''
+  }
+}
 
-  const [saved, setSaved] = useState(!!localStorage.getItem(API_KEY_STORAGE))
+export function useApiKey() {
+  const [apiKey, setApiKey] = useState(readStoredKey)
+  const [saved, setSaved] = useState(() => !!readStoredKey())
 
   const saveKey = useCallback((key) => {
     try {

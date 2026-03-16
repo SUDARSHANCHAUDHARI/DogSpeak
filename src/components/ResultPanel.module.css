@@ -164,6 +164,33 @@
   animation: fadeSlideUp 0.3s ease forwards;
 }
 
+/* Empty state */
+.emptyState {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 24px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  opacity: 0.5;
+}
+
+.emptyDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--faint);
+}
+
+.emptyText {
+  font-size: 13px;
+  font-family: 'DM Mono', monospace;
+  color: var(--faint);
+  letter-spacing: 0.03em;
+}
+
 /* Loading skeleton */
 @keyframes shimmer {
   0% { background-position: -400px 0; }

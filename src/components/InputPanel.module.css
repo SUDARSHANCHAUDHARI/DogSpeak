@@ -139,6 +139,17 @@
   color: var(--faint);
 }
 
+.lengthWarn {
+  font-size: 12px;
+  color: var(--warn);
+  background: var(--warn-bg);
+  border: 1px solid rgba(245, 166, 35, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
 .kbdHint {
   font-size: 12px;
   font-family: 'DM Mono', monospace;

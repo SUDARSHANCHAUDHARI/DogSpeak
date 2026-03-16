@@ -48,7 +48,14 @@ export default function ResultPanel({ result, error, loading, streamingTokens, o
     )
   }
 
-  if (!result) return null
+  if (!result) {
+    return (
+      <div className={styles.emptyState}>
+        <div className={styles.emptyDot} />
+        <p className={styles.emptyText}>Your translation will appear here</p>
+      </div>
+    )
+  }
 
   const sev = SEVERITY_CONFIG[result.severity] || SEVERITY_CONFIG.info
   const isNoAction =
@@ -70,10 +77,10 @@ export default function ResultPanel({ result, error, loading, streamingTokens, o
           {sev.label}
         </span>
         <div className={styles.resultActions}>
-          <button className={styles.actionBtn} onClick={handleCopy}>
+          <button className={styles.actionBtn} onClick={handleCopy} aria-label="Copy result to clipboard">
             {copied ? '✓ Copied' : 'Copy'}
           </button>
-          <button className={styles.actionBtn} onClick={onClear} title="Dismiss">✕</button>
+          <button className={styles.actionBtn} onClick={onClear} aria-label="Dismiss result">✕</button>
         </div>
       </div>
 

@@ -17,7 +17,11 @@ export default function ApiKeyInput({ apiKey, saved, onChange, onSave, onClear }
           autoComplete="off"
           spellCheck={false}
         />
-        <button className={styles.toggleBtn} onClick={() => setShowKey((v) => !v)} title="Toggle visibility">
+        <button
+          className={styles.toggleBtn}
+          onClick={() => setShowKey((v) => !v)}
+          aria-label={showKey ? 'Hide API key' : 'Show API key'}
+        >
           {showKey ? '🙈' : '👁'}
         </button>
         {saved ? (
