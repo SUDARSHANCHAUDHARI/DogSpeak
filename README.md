@@ -89,12 +89,35 @@ dogspeak/
 
 ---
 
+## Testing
+
+```bash
+npm test              # run all tests once
+npm run test:watch    # watch mode
+npm run test:coverage # with coverage report
+```
+
+67 tests across utils, hooks, and all components (Vitest + React Testing Library).
+
+---
+
+## CI
+
+GitHub Actions runs on every push and pull request to `main`:
+- Installs dependencies
+- Runs the full test suite
+- Builds for production
+
+See [.github/workflows/ci.yml](.github/workflows/ci.yml).
+
+---
+
 ## Tech Stack
 
 - **React 18** + **Vite**
 - **CSS Modules** for scoped styling
 - **Anthropic Claude API** (`claude-sonnet-4-20250514`) for translation
-- No other dependencies
+- **Vitest** + **React Testing Library** for tests
 
 ---
 
