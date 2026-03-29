@@ -1,8 +1,17 @@
 import React, { useState } from 'react'
 import { SEVERITY_CONFIG } from '../utils/constants'
+import type { TranslationResult } from '../types'
 import styles from './ResultPanel.module.css'
 
-export default function ResultPanel({ result, error, loading, streamingTokens, onClear }) {
+interface Props {
+  result: TranslationResult | null
+  error: string | null
+  loading: boolean
+  streamingTokens: number
+  onClear: () => void
+}
+
+export default function ResultPanel({ result, error, loading, streamingTokens, onClear }: Props) {
   const [copied, setCopied] = useState(false)
 
   function handleCopy() {
@@ -25,7 +34,7 @@ export default function ResultPanel({ result, error, loading, streamingTokens, o
   // Loading skeleton
   if (loading && !result) {
     return (
-      <div className={styles.skeleton}>
+      <div className={styles.skeleton} role="status" aria-live="polite" aria-label="Translating…">
         <div className={styles.skelBadge} />
         <div className={styles.skelHeadline} />
         <div className={styles.skelLine} />
@@ -42,7 +51,7 @@ export default function ResultPanel({ result, error, loading, streamingTokens, o
 
   if (error) {
     return (
-      <div className={styles.errorBox}>
+      <div className={styles.errorBox} role="alert">
         <strong>Error:</strong> {error}
       </div>
     )

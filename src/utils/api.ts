@@ -1,24 +1,37 @@
-const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'
-const MODEL = 'claude-sonnet-4-20250514'
+import type { Severity } from './constants'
 
-function parseApiError(status, errorData) {
+const ANTHROPIC_API_URL = import.meta.env.VITE_ANTHROPIC_API_URL || 'https://api.anthropic.com/v1/messages'
+const MODEL = import.meta.env.VITE_MODEL || 'claude-sonnet-4-20250514'
+
+export interface KeyFact {
+  label: string
+  value: string
+}
+
+export interface TranslationResult {
+  severity: Severity
+  headline: string
+  explanation: string
+  key_facts: KeyFact[]
+  action_needed: string
+}
+
+function parseApiError(status: number, errorData: unknown): string {
   if (status === 401) return 'Invalid API key. Check your key at console.anthropic.com.'
   if (status === 429) return 'Rate limit reached. Wait a moment and try again.'
   if (status === 529) return 'Anthropic API is overloaded. Try again in a few seconds.'
   if (status === 500) return 'Anthropic server error. Try again shortly.'
-  return errorData?.error?.message || `API error (${status})`
+  const msg = (errorData as { error?: { message?: string } })?.error?.message
+  return msg || `API error (${status})`
 }
 
-/**
- * Calls the Anthropic API with streaming and returns a parsed translation result.
- * @param {string} datadogInput - Raw Datadog content pasted by the user
- * @param {string} audiencePrompt - Audience description for the AI
- * @param {string} apiKey - Anthropic API key
- * @param {function} onStream - Called with accumulated text length as it streams in
- * @returns {Promise<TranslationResult>}
- */
-export async function translateDatadog(datadogInput, audiencePrompt, apiKey, onStream) {
-  const headers = {
+export async function translateDatadog(
+  datadogInput: string,
+  audiencePrompt: string,
+  apiKey: string,
+  onStream?: (accumulated: string) => void,
+): Promise<TranslationResult> {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'anthropic-version': '2023-06-01',
     'anthropic-dangerous-direct-browser-access': 'true',
@@ -38,12 +51,12 @@ export async function translateDatadog(datadogInput, audiencePrompt, apiKey, onS
   })
 
   if (!response.ok) {
-    let errorData = null
+    let errorData: unknown = null
     try { errorData = await response.json() } catch {}
     throw new Error(parseApiError(response.status, errorData))
   }
 
-  const reader = response.body.getReader()
+  const reader = response.body!.getReader()
   const decoder = new TextDecoder()
   let accumulated = ''
   let buffer = ''
@@ -54,14 +67,14 @@ export async function translateDatadog(datadogInput, audiencePrompt, apiKey, onS
 
     buffer += decoder.decode(value, { stream: true })
     const lines = buffer.split('\n')
-    buffer = lines.pop()
+    buffer = lines.pop() ?? ''
 
     for (const line of lines) {
       if (!line.startsWith('data: ')) continue
       const data = line.slice(6).trim()
       if (data === '[DONE]') continue
       try {
-        const event = JSON.parse(data)
+        const event = JSON.parse(data) as { type: string; error?: { message?: string }; delta?: { type: string; text: string } }
         if (event.type === 'error') {
           throw new Error(event.error?.message || 'Stream error from API')
         }
@@ -70,14 +83,14 @@ export async function translateDatadog(datadogInput, audiencePrompt, apiKey, onS
           onStream?.(accumulated)
         }
       } catch (e) {
-        if (e.message?.includes('Stream error')) throw e
+        if (e instanceof Error && e.message.includes('Stream error')) throw e
         // ignore JSON parse errors on malformed SSE chunks
       }
     }
   }
 
-  const jsonMatch = accumulated.match(/\{[\s\S]*\}/)
-  if (!jsonMatch) {
+  const parsed = extractFirstJson(accumulated)
+  if (!parsed) {
     const preview = accumulated.slice(0, 120).trim()
     throw new Error(
       preview
@@ -85,12 +98,27 @@ export async function translateDatadog(datadogInput, audiencePrompt, apiKey, onS
         : 'AI returned an empty response. Please try again.'
     )
   }
+  return parsed as TranslationResult
+}
 
-  try {
-    return JSON.parse(jsonMatch[0])
-  } catch {
-    throw new Error('Failed to parse AI response as JSON. Please try again.')
+function extractFirstJson(text: string): unknown {
+  // Try the whole string first (ideal case: model returns pure JSON)
+  try { return JSON.parse(text.trim()) } catch {}
+  // Walk forward to find the first balanced { ... } object
+  const start = text.indexOf('{')
+  if (start === -1) return null
+  let depth = 0
+  for (let i = start; i < text.length; i++) {
+    if (text[i] === '{') depth++
+    else if (text[i] === '}') {
+      depth--
+      if (depth === 0) {
+        try { return JSON.parse(text.slice(start, i + 1)) } catch {}
+        return null
+      }
+    }
   }
+  return null
 }
 
 const SYSTEM_PROMPT = `You are a Datadog monitoring expert. Your job is to translate Datadog alerts, logs, metrics, monitors, and traces into clear, plain English.
@@ -111,7 +139,7 @@ JSON schema:
   "action_needed": "What should a human do about this right now? Be specific and direct. If nothing, say: No action needed — this is just informational."
 }`
 
-function buildUserMessage(input, audiencePrompt) {
+function buildUserMessage(input: string, audiencePrompt: string): string {
   return `Explain the following Datadog content clearly for ${audiencePrompt}:
 
 ---

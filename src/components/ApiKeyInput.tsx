@@ -1,7 +1,15 @@
 import React, { useState } from 'react'
 import styles from './ApiKeyInput.module.css'
 
-export default function ApiKeyInput({ apiKey, saved, onChange, onSave, onClear }) {
+interface Props {
+  apiKey: string
+  saved: boolean
+  onChange: (key: string) => void
+  onSave: (key: string) => void
+  onClear: () => void
+}
+
+export default function ApiKeyInput({ apiKey, saved, onChange, onSave, onClear }: Props) {
   const [showKey, setShowKey] = useState(false)
 
   return (

@@ -2,12 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useTranslation } from './useTranslation'
 import { translateDatadog } from '../utils/api'
+import type { TranslationResult } from '../utils/api'
+import type { HistoryEntry } from '../types'
 
 vi.mock('../utils/api', () => ({
   translateDatadog: vi.fn(),
 }))
 
-const mockResult = {
+const mockResult: TranslationResult = {
   severity: 'warn',
   headline: 'High CPU detected',
   explanation: 'CPU is running hot.',
@@ -41,7 +43,7 @@ describe('useTranslation — initial state', () => {
 
 describe('useTranslation — translate', () => {
   it('calls translateDatadog and sets result on success', async () => {
-    translateDatadog.mockResolvedValue(mockResult)
+    vi.mocked(translateDatadog).mockResolvedValue(mockResult)
     const { result } = renderHook(() => useTranslation())
 
     await act(async () => {
@@ -54,7 +56,7 @@ describe('useTranslation — translate', () => {
   })
 
   it('adds translation to history with correct fields', async () => {
-    translateDatadog.mockResolvedValue(mockResult)
+    vi.mocked(translateDatadog).mockResolvedValue(mockResult)
     const { result } = renderHook(() => useTranslation())
 
     await act(async () => {
@@ -71,20 +73,20 @@ describe('useTranslation — translate', () => {
   })
 
   it('persists history to localStorage', async () => {
-    translateDatadog.mockResolvedValue(mockResult)
+    vi.mocked(translateDatadog).mockResolvedValue(mockResult)
     const { result } = renderHook(() => useTranslation())
 
     await act(async () => {
       await result.current.translate('some input', 'non-technical', 'api-key')
     })
 
-    const saved = JSON.parse(localStorage.getItem('dogspeak_history'))
+    const saved = JSON.parse(localStorage.getItem('dogspeak_history')!)
     expect(saved).toHaveLength(1)
     expect(saved[0].headline).toBe('High CPU detected')
   })
 
   it('sets error and does not add to history on failure', async () => {
-    translateDatadog.mockRejectedValue(new Error('Rate limit reached'))
+    vi.mocked(translateDatadog).mockRejectedValue(new Error('Rate limit reached'))
     const { result } = renderHook(() => useTranslation())
 
     await act(async () => {
@@ -119,10 +121,10 @@ describe('useTranslation — translate', () => {
 
 describe('useTranslation — history management', () => {
   it('loadFromHistory sets result and returns input', () => {
-    const entry = { parsed: mockResult, input: 'original input', headline: 'test', severity: 'ok', audienceKey: 'non-technical', time: '12:00' }
+    const entry: HistoryEntry = { parsed: mockResult, input: 'original input', headline: 'test', severity: 'ok', audienceKey: 'non-technical', time: '12:00' }
     const { result } = renderHook(() => useTranslation())
 
-    let returned
+    let returned: string | undefined
     act(() => {
       returned = result.current.loadFromHistory(entry)
     })
@@ -133,7 +135,7 @@ describe('useTranslation — history management', () => {
   })
 
   it('clearResult resets result and error', async () => {
-    translateDatadog.mockResolvedValue(mockResult)
+    vi.mocked(translateDatadog).mockResolvedValue(mockResult)
     const { result } = renderHook(() => useTranslation())
 
     await act(async () => {
@@ -146,7 +148,7 @@ describe('useTranslation — history management', () => {
   })
 
   it('clearHistory empties history and localStorage', async () => {
-    translateDatadog.mockResolvedValue(mockResult)
+    vi.mocked(translateDatadog).mockResolvedValue(mockResult)
     const { result } = renderHook(() => useTranslation())
 
     await act(async () => {
@@ -159,7 +161,7 @@ describe('useTranslation — history management', () => {
   })
 
   it('caps history at 10 entries', async () => {
-    translateDatadog.mockResolvedValue(mockResult)
+    vi.mocked(translateDatadog).mockResolvedValue(mockResult)
     const { result } = renderHook(() => useTranslation())
 
     for (let i = 0; i < 12; i++) {

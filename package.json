@@ -2,11 +2,15 @@
   "name": "dogspeak",
   "version": "1.0.0",
   "description": "Datadog plain English translator powered by Claude AI",
+  "type": "module",
   "private": true,
+  "packageManager": "pnpm@10.28.2",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
@@ -16,6 +20,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@testing-library/jest-dom": "^6.4.0",
     "@testing-library/react": "^14.3.0",
     "@testing-library/user-event": "^14.5.0",
@@ -23,7 +28,12 @@
     "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.2.0",
     "@vitest/coverage-v8": "^1.6.0",
+    "eslint": "^10.1.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "jsdom": "^24.0.0",
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.57.2",
     "vite": "^5.0.0",
     "vitest": "^1.6.0"
   }

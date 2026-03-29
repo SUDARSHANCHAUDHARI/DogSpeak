@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import ResultPanel from './ResultPanel'
+import type { TranslationResult } from '../utils/api'
 
-const mockResult = {
+const mockResult: TranslationResult = {
   severity: 'warn',
   headline: 'High CPU usage detected',
   explanation: 'The CPU is running at 94% which is above the threshold.',
@@ -14,8 +15,8 @@ const mockResult = {
 }
 
 const baseProps = {
-  result: null,
-  error: null,
+  result: null as TranslationResult | null,
+  error: null as string | null,
   loading: false,
   streamingTokens: 0,
   onClear: vi.fn(),

@@ -6,6 +6,7 @@ import ResultPanel from './components/ResultPanel'
 import HistoryPanel from './components/HistoryPanel'
 import { useTranslation } from './hooks/useTranslation'
 import { useApiKey } from './hooks/useApiKey'
+import type { HistoryEntry } from './types'
 import styles from './App.module.css'
 
 export default function App() {
@@ -22,7 +23,7 @@ export default function App() {
     translate(input, audience, apiKey)
   }
 
-  function handleHistorySelect(entry) {
+  function handleHistorySelect(entry: HistoryEntry) {
     const restoredInput = loadFromHistory(entry)
     setInput(restoredInput)
     window.scrollTo({ top: 0, behavior: 'smooth' })

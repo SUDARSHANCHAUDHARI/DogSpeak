@@ -1,14 +1,16 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import HistoryPanel from './HistoryPanel'
+import type { HistoryEntry } from '../types'
+import type { TranslationResult } from '../utils/api'
 
-const mockHistory = [
+const mockHistory: HistoryEntry[] = [
   {
     headline: 'High CPU usage detected',
     severity: 'warn',
     audienceKey: 'non-technical',
     time: '10:30',
-    parsed: {},
+    parsed: {} as TranslationResult,
     input: 'cpu input',
   },
   {
@@ -16,7 +18,7 @@ const mockHistory = [
     severity: 'critical',
     audienceKey: 'manager',
     time: '10:45',
-    parsed: {},
+    parsed: {} as TranslationResult,
     input: 'payment input',
   },
 ]

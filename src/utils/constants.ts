@@ -1,4 +1,26 @@
-export const EXAMPLES = [
+export type Severity = 'ok' | 'info' | 'warn' | 'critical'
+
+export interface Example {
+  label: string
+  text: string
+}
+
+export interface AudienceOption {
+  key: string
+  label: string
+  prompt: string
+}
+
+export interface SeverityConfigEntry {
+  label: string
+  dotColor: string
+  badgeClass: string
+  dotClass: string
+  actionClass: string
+  icon: string
+}
+
+export const EXAMPLES: Example[] = [
   {
     label: '[P1] Payment API',
     text: `[P1][ALERT] service:payment-api env:prod
@@ -44,7 +66,7 @@ k8s namespace: ml-services`,
   },
 ]
 
-export const AUDIENCE_OPTIONS = [
+export const AUDIENCE_OPTIONS: AudienceOption[] = [
   {
     key: 'non-technical',
     label: 'Non-technical',
@@ -65,7 +87,7 @@ export const AUDIENCE_OPTIONS = [
   },
 ]
 
-export const SEVERITY_CONFIG = {
+export const SEVERITY_CONFIG: Record<Severity, SeverityConfigEntry> = {
   ok: {
     label: 'All clear',
     dotColor: '#3ecf8e',
