@@ -90,7 +90,7 @@ function getStorage(remember: boolean): Storage | null {
 }
 
 export function useApiKey() {
-  const [remember, setRemember] = useState<boolean>(() => readLS(LS.remember) !== 'false')
+  const [remember, setRemember] = useState<boolean>(() => readLS(LS.remember) === 'true')
 
   // Read from whichever storage was last used (localStorage for settings, either for key)
   const [apiKey, setApiKey] = useState<string>(() =>

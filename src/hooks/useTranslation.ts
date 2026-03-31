@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { translateDatadog } from '../utils/api'
 import { AUDIENCE_OPTIONS } from '../utils/constants'
 import type { HistoryEntry } from '../types'
@@ -34,6 +34,7 @@ export function useTranslation() {
   const [error, setError] = useState<string | null>(null)
   const [history, setHistory] = useState<HistoryEntry[]>(loadHistory)
   const [streamingTokens, setStreamingTokens] = useState(0)
+  const abortRef = useRef<AbortController | null>(null)
 
   const translate = useCallback(async (
     input: string,
@@ -46,6 +47,11 @@ export function useTranslation() {
     const audienceOption = AUDIENCE_OPTIONS.find((a) => a.key === audienceKey)
     if (!audienceOption) return
 
+    // Cancel any in-flight request
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+
     setLoading(true)
     setError(null)
     setResult(null)
@@ -57,7 +63,7 @@ export function useTranslation() {
         audienceOption.prompt,
         apiKey,
         (accumulated) => setStreamingTokens(accumulated.length),
-        providerOptions,
+        { ...providerOptions, signal: controller.signal },
       )
       setResult(parsed)
       setStreamingTokens(0)
@@ -78,6 +84,11 @@ export function useTranslation() {
         return updated
       })
     } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return // cancelled — no error shown
+      if (err instanceof Error && err.name === 'TimeoutError') {
+        setError('Request timed out after 45 seconds. Please try again.')
+        return
+      }
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)

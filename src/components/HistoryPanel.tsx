@@ -39,7 +39,7 @@ export default function HistoryPanel({ history, onSelect, onClear }: Props) {
         Recent translations
         <div className={styles.actions}>
           <button className={styles.exportBtn} onClick={() => exportCsv(history)}>Export CSV</button>
-          <button className={styles.clearBtn} onClick={onClear}>Clear</button>
+          <button className={styles.clearBtn} onClick={() => { if (window.confirm('Clear all translation history?')) onClear() }}>Clear</button>
         </div>
       </div>
       <div className={styles.list}>

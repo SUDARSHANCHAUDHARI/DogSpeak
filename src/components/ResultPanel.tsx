@@ -36,6 +36,8 @@ export default function ResultPanel({ result, error, loading, streamingTokens, o
     navigator.clipboard.writeText(formatSlack(result)).then(() => {
       setShared(true)
       setTimeout(() => setShared(false), 2000)
+    }).catch(() => {
+      setShared(false)
     })
   }
 
@@ -53,6 +55,8 @@ export default function ResultPanel({ result, error, loading, streamingTokens, o
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
+    }).catch(() => {
+      setCopied(false)
     })
   }
 

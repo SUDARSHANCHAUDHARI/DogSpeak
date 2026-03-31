@@ -23,10 +23,13 @@ function parseApiError(status: number, errorData: unknown): string {
   return msg || `API error (${status})`
 }
 
+const REQUEST_TIMEOUT_MS = 45_000
+
 interface TranslateOptions {
   provider?: Provider
   model?: string
   baseUrl?: string
+  signal?: AbortSignal
 }
 
 export async function translateDatadog(
@@ -49,10 +52,16 @@ export async function translateDatadog(
     }
   }
 
+  // Combine user abort signal with a timeout signal
+  const timeoutSignal = AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+  const signal = options?.signal
+    ? AbortSignal.any([options.signal, timeoutSignal])
+    : timeoutSignal
+
   if (provider === 'anthropic') {
-    return translateAnthropic(datadogInput, audiencePrompt, apiKey, model, onStream)
+    return translateAnthropic(datadogInput, audiencePrompt, apiKey, model, signal, onStream)
   }
-  return translateOpenAI(datadogInput, audiencePrompt, apiKey, model, url, onStream)
+  return translateOpenAI(datadogInput, audiencePrompt, apiKey, model, url, signal, onStream)
 }
 
 async function translateAnthropic(
@@ -60,6 +69,7 @@ async function translateAnthropic(
   audiencePrompt: string,
   apiKey: string,
   model: string,
+  signal: AbortSignal,
   onStream?: (accumulated: string) => void,
 ): Promise<TranslationResult> {
   const url = import.meta.env.VITE_ANTHROPIC_API_URL || 'https://api.anthropic.com/v1/messages'
@@ -67,6 +77,7 @@ async function translateAnthropic(
   const response = await fetch(url, {
     method: 'POST',
     mode: 'cors',
+    signal,
     headers: {
       'Content-Type': 'application/json',
       'anthropic-version': '2023-06-01',
@@ -97,11 +108,13 @@ async function translateOpenAI(
   apiKey: string,
   model: string,
   url: string,
+  signal: AbortSignal,
   onStream?: (accumulated: string) => void,
 ): Promise<TranslationResult> {
   const response = await fetch(url, {
     method: 'POST',
     mode: 'cors',
+    signal,
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
