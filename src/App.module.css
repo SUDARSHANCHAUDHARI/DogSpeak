@@ -1,3 +1,14 @@
+.idleBanner {
+  background: rgba(245, 166, 35, 0.12);
+  border: 1px solid rgba(245, 166, 35, 0.3);
+  color: #f5a623;
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  font-size: 13px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
 .app {
   position: relative;
   z-index: 1;

@@ -1,3 +1,35 @@
+.topRow {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.field {
+  flex: 1;
+  min-width: 0;
+}
+
+.urlRow {
+  margin-bottom: 12px;
+}
+
+.select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+
+.select:focus {
+  border-color: var(--accent);
+}
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border2);
@@ -71,10 +103,54 @@
   color: var(--crit);
 }
 
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rememberLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.idleSelect {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  font-size: 12px;
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+
+.idleSelect:focus {
+  border-color: var(--accent);
+}
+
+.checkbox {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
 .hint {
   font-size: 12px;
   color: var(--faint);
-  margin-top: 8px;
 }
 
 .hint a {

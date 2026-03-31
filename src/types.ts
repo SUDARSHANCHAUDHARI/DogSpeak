@@ -10,4 +10,5 @@ export interface HistoryEntry {
   time: string
   parsed: TranslationResult
   input: string
+  savedAt?: number // epoch ms — used for auto-expiry
 }

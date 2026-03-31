@@ -5,9 +5,19 @@ import ApiKeyInput from './ApiKeyInput'
 const defaultProps = {
   apiKey: '',
   saved: false,
+  provider: 'anthropic' as const,
+  model: 'claude-sonnet-4-20250514',
+  baseUrl: '',
+  remember: true,
+  idleMinutes: 15,
   onChange: vi.fn(),
   onSave: vi.fn(),
   onClear: vi.fn(),
+  onProviderChange: vi.fn(),
+  onModelChange: vi.fn(),
+  onBaseUrlChange: vi.fn(),
+  onRememberChange: vi.fn(),
+  onIdleChange: vi.fn(),
 }
 
 describe('ApiKeyInput', () => {

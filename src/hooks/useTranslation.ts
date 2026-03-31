@@ -2,14 +2,19 @@ import { useState, useCallback } from 'react'
 import { translateDatadog } from '../utils/api'
 import { AUDIENCE_OPTIONS } from '../utils/constants'
 import type { HistoryEntry } from '../types'
+import type { Provider } from './useApiKey'
 
 const HISTORY_KEY = 'dogspeak_history'
 const MAX_HISTORY = 10
+const EXPIRY_MS = 24 * 60 * 60 * 1000 // 24 hours
 
 function loadHistory(): HistoryEntry[] {
   try {
     const saved = localStorage.getItem(HISTORY_KEY)
-    return saved ? (JSON.parse(saved) as HistoryEntry[]) : []
+    if (!saved) return []
+    const all = JSON.parse(saved) as HistoryEntry[]
+    const cutoff = Date.now() - EXPIRY_MS
+    return all.filter(e => !e.savedAt || e.savedAt > cutoff)
   } catch {
     return []
   }
@@ -30,7 +35,12 @@ export function useTranslation() {
   const [history, setHistory] = useState<HistoryEntry[]>(loadHistory)
   const [streamingTokens, setStreamingTokens] = useState(0)
 
-  const translate = useCallback(async (input: string, audienceKey: string, apiKey: string) => {
+  const translate = useCallback(async (
+    input: string,
+    audienceKey: string,
+    apiKey: string,
+    providerOptions?: { provider?: Provider; model?: string; baseUrl?: string },
+  ) => {
     if (!input.trim()) return
 
     const audienceOption = AUDIENCE_OPTIONS.find((a) => a.key === audienceKey)
@@ -47,6 +57,7 @@ export function useTranslation() {
         audienceOption.prompt,
         apiKey,
         (accumulated) => setStreamingTokens(accumulated.length),
+        providerOptions,
       )
       setResult(parsed)
       setStreamingTokens(0)
@@ -58,6 +69,7 @@ export function useTranslation() {
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         parsed,
         input,
+        savedAt: Date.now(),
       }
 
       setHistory((prev) => {

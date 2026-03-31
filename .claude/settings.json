@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm list:*)",
+      "Bash(find /Users/sudarshan/SUDARSHAN_CODE/sudarshan_repos/DogSpeak/src -type f \\\\\\( -name \"*.js\" -o -name \"*.jsx\" \\\\\\) -exec wc -l {} +)"
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import Navbar from './components/Navbar'
 import ApiKeyInput from './components/ApiKeyInput'
 import InputPanel from './components/InputPanel'
@@ -6,6 +6,7 @@ import ResultPanel from './components/ResultPanel'
 import HistoryPanel from './components/HistoryPanel'
 import { useTranslation } from './hooks/useTranslation'
 import { useApiKey } from './hooks/useApiKey'
+import { useIdleTimeout } from './hooks/useIdleTimeout'
 import type { HistoryEntry } from './types'
 import styles from './App.module.css'
 
@@ -13,14 +14,23 @@ export default function App() {
   const [input, setInput] = useState('')
   const [audience, setAudience] = useState('non-technical')
 
-  const { apiKey, saved, setApiKey, saveKey, clearKey } = useApiKey()
+  const { apiKey, saved, provider, model, baseUrl, remember, idleMinutes, setApiKey, saveKey, clearKey, changeProvider, changeModel, changeBaseUrl, toggleRemember, changeIdleMinutes } = useApiKey()
+  const [idleCleared, setIdleCleared] = useState(false)
+
+  const handleIdle = useCallback(() => {
+    clearKey()
+    setIdleCleared(true)
+    setTimeout(() => setIdleCleared(false), 5000)
+  }, [clearKey])
+
+  useIdleTimeout(handleIdle, idleMinutes * 60 * 1000, saved && idleMinutes > 0)
   const {
     loading, result, error, history, streamingTokens,
     translate, loadFromHistory, clearResult, clearHistory,
   } = useTranslation()
 
   function handleTranslate() {
-    translate(input, audience, apiKey)
+    translate(input, audience, apiKey, { provider, model, baseUrl })
   }
 
   function handleHistorySelect(entry: HistoryEntry) {
@@ -43,12 +53,28 @@ export default function App() {
         </p>
       </div>
 
+      {idleCleared && (
+        <div className={styles.idleBanner}>
+          API key cleared due to inactivity.
+        </div>
+      )}
+
       <ApiKeyInput
         apiKey={apiKey}
         saved={saved}
+        provider={provider}
+        model={model}
+        baseUrl={baseUrl}
+        remember={remember}
+        idleMinutes={idleMinutes}
         onChange={setApiKey}
         onSave={saveKey}
         onClear={clearKey}
+        onProviderChange={changeProvider}
+        onModelChange={changeModel}
+        onBaseUrlChange={changeBaseUrl}
+        onRememberChange={toggleRemember}
+        onIdleChange={changeIdleMinutes}
       />
 
       <InputPanel
