@@ -75,8 +75,8 @@ describe('ApiKeyInput', () => {
     expect(onClear).toHaveBeenCalled()
   })
 
-  it('shows a hint about localStorage storage', () => {
+  it('shows a hint about browser storage', () => {
     render(<ApiKeyInput {...defaultProps} />)
-    expect(screen.getByText(/localStorage/i)).toBeInTheDocument()
+    expect(screen.getByText(/stored only in your browser/i)).toBeInTheDocument()
   })
 })

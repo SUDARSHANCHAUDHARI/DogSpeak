@@ -121,6 +121,7 @@ export default function ApiKeyInput({
               </label>
             </div>
             <span className={styles.hint}>
+              Stored only in your browser.{' '}
               {config.hintUrl ? (
                 <a href={config.hintUrl} target="_blank" rel="noreferrer">
                   {config.hintText} →

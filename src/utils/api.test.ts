@@ -46,7 +46,7 @@ describe('translateDatadog — error handling', () => {
 
   it('throws a user-friendly message on 500', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({}) }))
-    await expect(translateDatadog('input', 'audience', 'key', vi.fn())).rejects.toThrow('server error')
+    await expect(translateDatadog('input', 'audience', 'key', vi.fn())).rejects.toThrow('Server error')
   })
 
   it('falls back to error.message for unknown status codes', async () => {

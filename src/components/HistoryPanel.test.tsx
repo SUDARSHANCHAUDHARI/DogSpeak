@@ -56,6 +56,7 @@ describe('HistoryPanel', () => {
 
   it('calls onClear when Clear button is clicked', () => {
     const onClear = vi.fn()
+    vi.stubGlobal('confirm', vi.fn().mockReturnValue(true))
     render(<HistoryPanel history={mockHistory} onSelect={vi.fn()} onClear={onClear} />)
     fireEvent.click(screen.getByText('Clear'))
     expect(onClear).toHaveBeenCalled()
