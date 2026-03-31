@@ -12,6 +12,10 @@ export interface TranslationResult {
   explanation: string
   key_facts: KeyFact[]
   action_needed: string
+  // Audience-specific optional fields
+  analogy?: string       // non-technical: everyday analogy
+  business_impact?: string // manager: users affected, revenue risk, SLA
+  concepts?: KeyFact[]   // junior dev: jargon definitions
 }
 
 function parseApiError(status: number, errorData: unknown): string {
@@ -30,6 +34,7 @@ interface TranslateOptions {
   model?: string
   baseUrl?: string
   signal?: AbortSignal
+  audienceSchema?: string
 }
 
 export async function translateDatadog(
@@ -58,15 +63,18 @@ export async function translateDatadog(
     ? AbortSignal.any([options.signal, timeoutSignal])
     : timeoutSignal
 
+  const audienceSchema = options?.audienceSchema ?? ''
+
   if (provider === 'anthropic') {
-    return translateAnthropic(datadogInput, audiencePrompt, apiKey, model, signal, onStream)
+    return translateAnthropic(datadogInput, audiencePrompt, audienceSchema, apiKey, model, signal, onStream)
   }
-  return translateOpenAI(datadogInput, audiencePrompt, apiKey, model, url, signal, onStream)
+  return translateOpenAI(datadogInput, audiencePrompt, audienceSchema, apiKey, model, url, signal, onStream)
 }
 
 async function translateAnthropic(
   datadogInput: string,
   audiencePrompt: string,
+  audienceSchema: string,
   apiKey: string,
   model: string,
   signal: AbortSignal,
@@ -86,10 +94,10 @@ async function translateAnthropic(
     },
     body: JSON.stringify({
       model,
-      max_tokens: 1000,
+      max_tokens: 1200,
       stream: true,
       system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: buildUserMessage(datadogInput, audiencePrompt) }],
+      messages: [{ role: 'user', content: buildUserMessage(datadogInput, audiencePrompt, audienceSchema) }],
     }),
   })
 
@@ -105,6 +113,7 @@ async function translateAnthropic(
 async function translateOpenAI(
   datadogInput: string,
   audiencePrompt: string,
+  audienceSchema: string,
   apiKey: string,
   model: string,
   url: string,
@@ -125,7 +134,7 @@ async function translateOpenAI(
       stream: true,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: buildUserMessage(datadogInput, audiencePrompt) },
+        { role: 'user', content: buildUserMessage(datadogInput, audiencePrompt, audienceSchema) },
       ],
     }),
   })
@@ -249,27 +258,17 @@ function extractFirstJson(text: string): unknown {
   return null
 }
 
-const SYSTEM_PROMPT = `You are a Datadog monitoring expert. Your job is to translate Datadog alerts, logs, metrics, monitors, and traces into clear, plain English.
+const SYSTEM_PROMPT = `You are a Datadog monitoring expert. Translate Datadog alerts, logs, metrics, monitors, and traces into clear explanations tailored to a specific audience.
 
-Always respond with a single valid JSON object — no markdown, no backticks, no commentary outside the JSON.
+Always respond with a single valid JSON object matching the schema provided — no markdown, no backticks, no commentary outside the JSON. Only include fields defined in the schema.`
 
-JSON schema:
-{
-  "severity": "ok" | "info" | "warn" | "critical",
-  "headline": "One sentence — what is happening RIGHT NOW, in plain English. Max 15 words. Do not start with 'The'.",
-  "explanation": "2-4 sentences. What is happening, why it matters, and what impact it has. Zero jargon. Use analogies if helpful.",
-  "key_facts": [
-    { "label": "What", "value": "brief description" },
-    { "label": "Where", "value": "service or host name" },
-    { "label": "Since when", "value": "time or duration" },
-    { "label": "Severity", "value": "how bad is this" }
-  ],
-  "action_needed": "What should a human do about this right now? Be specific and direct. If nothing, say: No action needed — this is just informational."
-}`
+function buildUserMessage(input: string, audiencePrompt: string, audienceSchema: string): string {
+  return `Explain the following Datadog content for ${audiencePrompt}.
 
-function buildUserMessage(input: string, audiencePrompt: string): string {
-  return `Explain the following Datadog content clearly for ${audiencePrompt}:
+Respond with this exact JSON schema:
+${audienceSchema}
 
+Datadog content:
 ---
 ${input}
 ---`

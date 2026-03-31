@@ -9,6 +9,7 @@ export interface AudienceOption {
   key: string
   label: string
   prompt: string
+  schema: string
 }
 
 export interface SeverityConfigEntry {
@@ -70,20 +71,58 @@ export const AUDIENCE_OPTIONS: AudienceOption[] = [
   {
     key: 'non-technical',
     label: 'Non-technical',
-    prompt:
-      'a completely non-technical person (no jargon at all, use everyday analogies like comparing servers to kitchens or traffic)',
+    prompt: 'a completely non-technical person — use everyday analogies, no jargon at all',
+    schema: `{
+  "severity": "ok" | "info" | "warn" | "critical",
+  "headline": "One sentence in everyday language. No jargon. Max 15 words. Do not start with 'The'.",
+  "analogy": "One sentence everyday analogy explaining what happened (e.g. 'It's like a restaurant kitchen that stopped taking orders'). Make it relatable.",
+  "explanation": "2-3 sentences. What happened, whether regular users are affected, and whether someone is already working on it. Absolutely zero technical terms.",
+  "key_facts": [
+    { "label": "What happened", "value": "plain English description, no acronyms" },
+    { "label": "Who's affected", "value": "customers, teams, or services impacted" },
+    { "label": "How serious", "value": "casual everyday language — e.g. minor hiccup, serious problem, all systems down" },
+    { "label": "Status", "value": "is the tech team handling it, or does someone need to act?" }
+  ],
+  "action_needed": "What should a non-technical person do right now? If the tech team is handling it, say so clearly. If they need to communicate to customers or stakeholders, say that."
+}`,
   },
   {
     key: 'manager',
     label: 'Manager / exec',
-    prompt:
-      'a manager or executive (focus entirely on business impact, user impact, revenue risk, and what decisions they need to make)',
+    prompt: 'a manager or executive who cares about business impact, user impact, and decisions — not technical details',
+    schema: `{
+  "severity": "ok" | "info" | "warn" | "critical",
+  "headline": "One sentence focused on business or customer impact. Max 15 words. Do not start with 'The'.",
+  "explanation": "2-3 sentences. Customer impact, business risk, and whether the team is on it. No technical jargon.",
+  "business_impact": "Specific impact statement: estimated number of users affected, revenue risk (high/medium/low with brief reason), SLA implications, and whether this is customer-facing.",
+  "key_facts": [
+    { "label": "Users affected", "value": "estimate or unknown" },
+    { "label": "Revenue risk", "value": "high / medium / low — brief reason" },
+    { "label": "Customer-facing", "value": "yes or no" },
+    { "label": "Est. time to resolve", "value": "best estimate or unknown" }
+  ],
+  "action_needed": "What decision or communication does the manager need to make RIGHT NOW? Should they notify customers? Escalate? Stand up an incident call? Be direct."
+}`,
   },
   {
     key: 'developer',
     label: 'Junior developer',
-    prompt:
-      'a junior developer who is new to observability tools, DevOps, and production monitoring',
+    prompt: 'a junior developer who is new to production monitoring, observability, and DevOps',
+    schema: `{
+  "severity": "ok" | "info" | "warn" | "critical",
+  "headline": "One sentence describing what is broken or degraded. Max 15 words. Do not start with 'The'.",
+  "explanation": "2-3 sentences: what the alert means technically, why this specific threshold matters, and what commonly causes this kind of issue.",
+  "concepts": [
+    { "label": "technical term from the alert", "value": "plain explanation of what this term or metric means, why it matters, and how to think about it" }
+  ],
+  "key_facts": [
+    { "label": "What", "value": "which metric or service is affected" },
+    { "label": "Where", "value": "service name, host, or component" },
+    { "label": "Threshold breached", "value": "what the limit was vs the current value" },
+    { "label": "Duration", "value": "how long this has been happening" }
+  ],
+  "action_needed": "Numbered steps a junior dev should take: 1) Check X dashboard or log 2) Look for Y pattern 3) If you see Z, escalate to a senior engineer. Name specific tools or dashboards where possible."
+}`,
   },
 ]
 

@@ -128,8 +128,39 @@ export default function ResultPanel({ result, error, loading, streamingTokens, o
       {/* Headline */}
       <h2 className={styles.headline}>{result.headline}</h2>
 
+      {/* Non-technical: analogy */}
+      {result.analogy && (
+        <div className={styles.analogyBox}>
+          <span className={styles.analogyIcon}>💡</span>
+          <p>{result.analogy}</p>
+        </div>
+      )}
+
       {/* Explanation */}
       <p className={styles.explanation}>{result.explanation}</p>
+
+      {/* Manager: business impact */}
+      {result.business_impact && (
+        <div className={styles.businessImpact}>
+          <div className={styles.impactLabel}>Business impact</div>
+          <p>{result.business_impact}</p>
+        </div>
+      )}
+
+      {/* Junior dev: key concepts */}
+      {result.concepts && result.concepts.length > 0 && (
+        <div className={styles.conceptsSection}>
+          <div className={styles.conceptsLabel}>Key concepts</div>
+          <div className={styles.conceptsList}>
+            {result.concepts.map(c => (
+              <div key={c.label} className={styles.conceptCard}>
+                <code className={styles.conceptTerm}>{c.label}</code>
+                <p className={styles.conceptDef}>{c.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Fact cards */}
       {result.key_facts?.length > 0 && (

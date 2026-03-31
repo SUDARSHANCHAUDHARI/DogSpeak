@@ -63,7 +63,7 @@ export function useTranslation() {
         audienceOption.prompt,
         apiKey,
         (accumulated) => setStreamingTokens(accumulated.length),
-        { ...providerOptions, signal: controller.signal },
+        { ...providerOptions, signal: controller.signal, audienceSchema: audienceOption.schema },
       )
       setResult(parsed)
       setStreamingTokens(0)
