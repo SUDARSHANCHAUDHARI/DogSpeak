@@ -31,6 +31,27 @@
   50% { box-shadow: 0 0 20px var(--accent), 0 0 40px rgba(124, 109, 255, 0.3); }
 }
 
+.right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.themeBtn {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 16px;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+.themeBtn:hover {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+}
+
 .badge {
   font-size: 11px;
   font-family: 'DM Mono', monospace;

@@ -7,12 +7,14 @@ import HistoryPanel from './components/HistoryPanel'
 import { useTranslation } from './hooks/useTranslation'
 import { useApiKey } from './hooks/useApiKey'
 import { useIdleTimeout } from './hooks/useIdleTimeout'
+import { useTheme } from './hooks/useTheme'
 import type { HistoryEntry } from './types'
 import styles from './App.module.css'
 
 export default function App() {
   const [input, setInput] = useState('')
   const [audience, setAudience] = useState('non-technical')
+  const { theme, toggle: toggleTheme } = useTheme()
 
   const { apiKey, saved, provider, model, baseUrl, remember, idleMinutes, setApiKey, saveKey, clearKey, changeProvider, changeModel, changeBaseUrl, toggleRemember, changeIdleMinutes } = useApiKey()
   const [idleCleared, setIdleCleared] = useState(false)
@@ -41,7 +43,7 @@ export default function App() {
 
   return (
     <div className={styles.app}>
-      <Navbar />
+      <Navbar theme={theme} onToggleTheme={toggleTheme} />
 
       <div className={styles.hero}>
         <h1 className={styles.heroTitle}>

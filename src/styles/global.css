@@ -22,6 +22,31 @@
   --radius-lg: 16px;
 }
 
+body.light {
+  --bg: #f4f4f8;
+  --surface: #ffffff;
+  --surface2: #ebebf2;
+  --border: rgba(0, 0, 0, 0.08);
+  --border2: rgba(0, 0, 0, 0.14);
+  --text: #1a1a2e;
+  --muted: #6b6b80;
+  --faint: #c5c5d5;
+  --accent: #6c5ce7;
+  --accent-glow: rgba(108, 92, 231, 0.12);
+  --ok-bg: rgba(62, 207, 142, 0.12);
+  --warn-bg: rgba(245, 166, 35, 0.12);
+  --crit-bg: rgba(255, 87, 87, 0.12);
+  --info-bg: rgba(91, 156, 246, 0.12);
+}
+
+body.light::before {
+  background: radial-gradient(circle, rgba(108, 92, 231, 0.06) 0%, transparent 70%);
+}
+
+body.light::after {
+  background: radial-gradient(circle, rgba(62, 207, 142, 0.04) 0%, transparent 70%);
+}
+
 *,
 *::before,
 *::after {

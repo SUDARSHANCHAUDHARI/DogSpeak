@@ -9,6 +9,27 @@ interface Props {
   onClear: () => void
 }
 
+function exportCsv(history: HistoryEntry[]) {
+  const headers = ['Time', 'Severity', 'Audience', 'Headline', 'Explanation', 'Action']
+  const rows = history.map(e => [
+    e.time,
+    e.severity,
+    AUDIENCE_OPTIONS.find(a => a.key === e.audienceKey)?.label ?? e.audienceKey,
+    e.parsed.headline,
+    e.parsed.explanation,
+    e.parsed.action_needed,
+  ].map(v => `"${String(v).replace(/"/g, '""')}"`))
+
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n')
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `dogspeak-history-${new Date().toISOString().slice(0, 10)}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 export default function HistoryPanel({ history, onSelect, onClear }: Props) {
   if (!history.length) return null
 
@@ -16,7 +37,10 @@ export default function HistoryPanel({ history, onSelect, onClear }: Props) {
     <div className={styles.section} aria-label="Recent translations">
       <div className={styles.title}>
         Recent translations
-        <button className={styles.clearBtn} onClick={onClear}>Clear</button>
+        <div className={styles.actions}>
+          <button className={styles.exportBtn} onClick={() => exportCsv(history)}>Export CSV</button>
+          <button className={styles.clearBtn} onClick={onClear}>Clear</button>
+        </div>
       </div>
       <div className={styles.list}>
         {history.map((item, i) => {

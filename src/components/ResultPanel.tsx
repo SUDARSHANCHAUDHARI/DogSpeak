@@ -3,6 +3,22 @@ import { SEVERITY_CONFIG } from '../utils/constants'
 import type { TranslationResult } from '../types'
 import styles from './ResultPanel.module.css'
 
+function formatSlack(result: TranslationResult): string {
+  const sev = SEVERITY_CONFIG[result.severity]
+  const facts = result.key_facts?.map(f => `• *${f.label}:* ${f.value}`).join('\n') ?? ''
+  return [
+    `${sev.icon} *${result.headline}*`,
+    '',
+    result.explanation,
+    '',
+    facts,
+    '',
+    `⚡ *Action:* ${result.action_needed}`,
+    '',
+    '_via DogSpeak_',
+  ].join('\n')
+}
+
 interface Props {
   result: TranslationResult | null
   error: string | null
@@ -13,6 +29,15 @@ interface Props {
 
 export default function ResultPanel({ result, error, loading, streamingTokens, onClear }: Props) {
   const [copied, setCopied] = useState(false)
+  const [shared, setShared] = useState(false)
+
+  function handleShare() {
+    if (!result) return
+    navigator.clipboard.writeText(formatSlack(result)).then(() => {
+      setShared(true)
+      setTimeout(() => setShared(false), 2000)
+    })
+  }
 
   function handleCopy() {
     if (!result) return
@@ -88,6 +113,9 @@ export default function ResultPanel({ result, error, loading, streamingTokens, o
         <div className={styles.resultActions}>
           <button className={styles.actionBtn} onClick={handleCopy} aria-label="Copy result to clipboard">
             {copied ? '✓ Copied' : 'Copy'}
+          </button>
+          <button className={styles.actionBtn} onClick={handleShare} aria-label="Copy as Slack/Teams message">
+            {shared ? '✓ Shared' : 'Share'}
           </button>
           <button className={styles.actionBtn} onClick={onClear} aria-label="Dismiss result">✕</button>
         </div>
