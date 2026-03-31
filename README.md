@@ -1,145 +1,135 @@
-# DogSpeak 🐶
+# DogSpeak
 
-**Datadog plain English translator** — paste any Datadog alert, log, or metric and get a simple explanation anyone can understand.
+**Translate Datadog alerts and logs into plain English — for anyone.**
 
-Powered by [Claude](https://claude.ai) (Anthropic).
+Paste any Datadog alert, log, metric, or monitor. Pick your audience. Get a clear explanation that engineers, managers, and non-technical teammates can all understand.
+
+Live: [sudarshanchaudhari.github.io/DogSpeak](https://sudarshanchaudhari.github.io/DogSpeak)
 
 ---
 
-## Features
+## What it does
 
-- Paste any Datadog content: alerts, logs, CPU metrics, monitor triggers, error traces
-- 3 audience modes: non-technical, manager/exec, junior developer
+- Paste any Datadog content: monitor alerts, log lines, CPU metrics, error traces, latency warnings
+- Choose your audience — the explanation is genuinely different for each:
+  - **Non-technical** — everyday analogy, zero jargon, plain sentences
+  - **Manager / exec** — business impact, users affected, revenue risk, decision needed
+  - **Junior developer** — concept definitions, what to check, numbered steps to follow
 - Color-coded severity: OK / Info / Warn / Critical
-- Plain English headline, explanation, key facts, and recommended action
-- Translation history saved in the browser (last 10)
-- API key stored securely in localStorage
+- Streaming response (text appears as it's generated)
+- Share as Slack/Teams message with one click
+- Export translation history as CSV
+- Dark and light mode
 
 ---
 
-## Quick Start
+## Providers supported
 
-### 1. Install dependencies
+| Provider | Free? | Get a key |
+|----------|-------|-----------|
+| Anthropic | Paid | [console.anthropic.com](https://console.anthropic.com) |
+| OpenRouter | Free tier | [openrouter.ai](https://openrouter.ai) |
+| Groq | Free | [console.groq.com](https://console.groq.com) |
+| Ollama | Free (local) | [ollama.com](https://ollama.com) |
+| Custom | — | Any OpenAI-compatible endpoint |
 
-```bash
-npm install
-```
-
-### 2. Run in development
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-### 3. Build for production
-
-```bash
-npm run build
-```
-
-The output will be in the `dist/` folder — you can deploy it to any static host (Vercel, Netlify, GitHub Pages, etc.).
+Your API key is stored only in your browser (sessionStorage by default — cleared when you close the tab). It is never sent to any server other than the AI provider you choose.
 
 ---
 
-## Setup
+## Quick start
 
-### Anthropic API Key
+```bash
+pnpm install
+pnpm dev
+```
 
-1. Go to [console.anthropic.com](https://console.anthropic.com)
-2. Create an API key
-3. Paste it into the API Key field in the app — it will be saved in your browser's localStorage
-
-The key is **never sent anywhere** except directly to `api.anthropic.com`.
+Open [http://localhost:5173](http://localhost:5173). Paste your API key, pick a provider, try one of the built-in examples.
 
 ---
 
-## Project Structure
+## Scripts
 
-```
-dogspeak/
-├── index.html                  # HTML entry point
-├── vite.config.js              # Vite config
-├── package.json
-├── src/
-│   ├── main.jsx                # React root
-│   ├── App.jsx                 # Root component
-│   ├── App.module.css
-│   ├── styles/
-│   │   └── global.css          # Global CSS variables & resets
-│   ├── components/
-│   │   ├── Navbar.jsx          # Top navigation bar
-│   │   ├── Navbar.module.css
-│   │   ├── ApiKeyInput.jsx     # API key entry & storage
-│   │   ├── ApiKeyInput.module.css
-│   │   ├── InputPanel.jsx      # Textarea + examples + audience
-│   │   ├── InputPanel.module.css
-│   │   ├── ResultPanel.jsx     # Translation result display
-│   │   ├── ResultPanel.module.css
-│   │   ├── HistoryPanel.jsx    # Past translations list
-│   │   └── HistoryPanel.module.css
-│   ├── hooks/
-│   │   ├── useTranslation.js   # Translation state & history logic
-│   │   └── useApiKey.js        # API key persistence
-│   └── utils/
-│       ├── api.js              # Anthropic API call + prompt
-│       └── constants.js        # Examples, audience options, severity config
+```bash
+pnpm dev            # start dev server
+pnpm build          # production build
+pnpm build:pages    # build for GitHub Pages (sets /DogSpeak/ base path)
+pnpm lint           # ESLint
+pnpm typecheck      # TypeScript check
+pnpm test           # run all tests
+pnpm test:coverage  # tests with coverage report
 ```
 
 ---
 
-## Testing
+## Environment variables (optional)
 
-```bash
-npm test              # run all tests once
-npm run test:watch    # watch mode
-npm run test:coverage # with coverage report
+Copy `.env.example` to `.env.local` to override defaults:
+
 ```
-
-67 tests across utils, hooks, and all components (Vitest + React Testing Library).
+VITE_ANTHROPIC_API_URL=   # override Anthropic endpoint
+VITE_MODEL=               # override default model
+```
 
 ---
 
-## CI
+## Project structure
 
-GitHub Actions runs on every push and pull request to `main`:
-- Installs dependencies
-- Runs the full test suite
-- Builds for production
-
-See [.github/workflows/ci.yml](.github/workflows/ci.yml).
+```
+src/
+├── main.tsx                  # React root + ErrorBoundary
+├── App.tsx                   # Root component
+├── types.ts                  # Shared TypeScript interfaces
+├── vite-env.d.ts             # Vite env type declarations
+├── styles/
+│   └── global.css            # CSS variables, resets, animations
+├── components/
+│   ├── Navbar.tsx            # Top bar with theme toggle
+│   ├── ApiKeyInput.tsx       # Provider/model/key config + idle timeout
+│   ├── InputPanel.tsx        # Textarea, examples, audience selector
+│   ├── ResultPanel.tsx       # Translation output (headline, analogy, facts, action)
+│   ├── HistoryPanel.tsx      # Past translations with export CSV
+│   └── ErrorBoundary.tsx     # React error boundary
+├── hooks/
+│   ├── useApiKey.ts          # Provider config and key storage
+│   ├── useTranslation.ts     # Translation state, history, AbortController
+│   ├── useIdleTimeout.ts     # Auto-clear key after inactivity
+│   └── useTheme.ts           # Dark/light mode toggle
+└── utils/
+    ├── api.ts                # AI provider calls (Anthropic + OpenAI-compatible)
+    └── constants.ts          # Examples, audience schemas, severity config
+```
 
 ---
 
-## Tech Stack
+## Security
 
-- **React 18** + **Vite**
-- **CSS Modules** for scoped styling
-- **Anthropic Claude API** (`claude-sonnet-4-20250514`) for translation
-- **Vitest** + **React Testing Library** for tests
+- API key stored in `sessionStorage` by default — cleared on tab close
+- "Remember across sessions" checkbox moves it to `localStorage` (opt-in)
+- Idle timeout: auto-clears key after configurable inactivity (default 15 min)
+- Translation history auto-expires after 24 hours
+- Content Security Policy header restricts connections to known AI provider domains
+- AbortController cancels in-flight requests; 45s timeout prevents hangs
+- No backend — your key goes directly to the AI provider, never through any intermediate server
 
 ---
 
-## Deploying
+## CI / Deployment
 
-### Vercel
+Two GitHub Actions workflows:
 
-```bash
-npm i -g vercel
-vercel
-```
+- **CI** (`.github/workflows/ci.yml`) — runs on every push to `main`: lint, typecheck, audit, tests with coverage
+- **Deploy** (`.github/workflows/deploy.yml`) — deploys to GitHub Pages on every push to `main`
 
-### Netlify
+To enable GitHub Pages: go to your repo **Settings → Pages → Source → GitHub Actions**.
 
-```bash
-npm run build
-# Drag the dist/ folder to netlify.com/drop
-```
+---
 
-### GitHub Pages
+## Tech stack
 
-```bash
-npm run build
-# Push dist/ to gh-pages branch
-```
+- React 18 + Vite 5
+- TypeScript (strict mode)
+- CSS Modules
+- Vitest + React Testing Library
+- pnpm
+- ESLint (flat config, typescript-eslint)
