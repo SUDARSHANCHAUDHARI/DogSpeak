@@ -5,7 +5,6 @@ const EVENTS = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'cl
 export function useIdleTimeout(onIdle: () => void, timeoutMs: number, enabled: boolean) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const onIdleRef = useRef(onIdle)
-  onIdleRef.current = onIdle
 
   const reset = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current)
@@ -13,6 +12,10 @@ export function useIdleTimeout(onIdle: () => void, timeoutMs: number, enabled: b
       timerRef.current = setTimeout(() => onIdleRef.current(), timeoutMs)
     }
   }, [enabled, timeoutMs])
+
+  useEffect(() => {
+    onIdleRef.current = onIdle
+  })
 
   useEffect(() => {
     if (!enabled || timeoutMs <= 0) {
