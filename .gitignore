@@ -5,3 +5,4 @@ coverage/
 .env.local
 .DS_Store
 vercel.json
+PLAN.md
