@@ -114,14 +114,20 @@ src/
 
 ---
 
-## CI / Deployment
+## Quality checks & deployment
 
-Two GitHub Actions workflows:
+Run the full quality bar locally before pushing:
 
-- **CI** (`.github/workflows/ci.yml`) — runs on every push to `main`: lint, typecheck, audit, tests with coverage
-- **Deploy** (`.github/workflows/deploy.yml`) — deploys to GitHub Pages on every push to `main`
+```bash
+pnpm lint        # ESLint
+pnpm typecheck   # TypeScript (strict)
+pnpm test        # 67 tests across 7 suites
+pnpm build       # production build
+```
 
-To enable GitHub Pages: go to your repo **Settings → Pages → Source → GitHub Actions**.
+Deployment is handled by a GitHub Actions workflow that publishes to GitHub Pages on every push to `main`. Enable it once under **Settings → Pages → Source → GitHub Actions**.
+
+Live build: [sudarshanchaudhari.github.io/DogSpeak](https://sudarshanchaudhari.github.io/DogSpeak)
 
 ---
 
