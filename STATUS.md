@@ -41,3 +41,47 @@ Optional polish:
 ## Deployment
 
 Already live via GitHub Pages workflow on every push to `main`.
+
+## File-by-file checklist
+
+### Source (`src/`)
+- [x] `main.tsx` — React root + ErrorBoundary mount
+- [x] `App.tsx` — root component composition
+- [x] `types.ts` — shared TypeScript interfaces
+- [x] `vite-env.d.ts` — Vite env type declarations
+- [x] `styles/global.css` — CSS variables, resets, animations
+
+### Components
+- [x] `components/Navbar.tsx` — top bar + theme toggle
+- [x] `components/ApiKeyInput.tsx` — provider/model/key config + idle timeout
+- [x] `components/InputPanel.tsx` — textarea + examples + audience selector
+- [x] `components/ResultPanel.tsx` — translation output (headline, analogy, facts, action)
+- [x] `components/HistoryPanel.tsx` — past translations + CSV export
+- [x] `components/ErrorBoundary.tsx` — React error boundary
+
+### Hooks
+- [x] `hooks/useApiKey.ts` — provider config + key storage
+- [x] `hooks/useTranslation.ts` — translation state + history + AbortController
+- [x] `hooks/useIdleTimeout.ts` — auto-clear key after inactivity
+- [x] `hooks/useTheme.ts` — dark/light mode toggle
+
+### Lib (`utils/`)
+- [x] `utils/api.ts` — AI provider calls (Anthropic + OpenAI-compatible)
+- [x] `utils/constants.ts` — examples, audience schemas, severity config
+
+### Tests (`src/**/*.test.*`)
+- [x] `utils/api.test.ts`
+- [x] `hooks/useApiKey.test.ts`
+- [x] `hooks/useTranslation.test.ts`
+- [x] `components/ApiKeyInput.test.tsx`
+- [x] `components/HistoryPanel.test.tsx`
+- [x] `components/InputPanel.test.tsx`
+- [x] `components/ResultPanel.test.tsx`
+- [x] 67 tests across 7 suites — all green
+
+### Deployment
+- [x] GitHub Pages workflow (`.github/workflows/deploy.yml`)
+- [x] `vite.config.js` with correct base path for Pages
+- [x] Live URL responding 200
+
+### Nothing remaining for the current product.
