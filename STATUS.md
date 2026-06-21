@@ -85,3 +85,22 @@ Already live via GitHub Pages workflow on every push to `main`.
 - [x] Live URL responding 200
 
 ### Nothing remaining for the current product.
+
+## Categorized work remaining
+
+| Item | Effort | Bucket | Blocker | Priority |
+|------|--------|--------|---------|----------|
+| — | — | — | — | — |
+
+🎉 **DogSpeak has zero open items.** Already feature-complete and live.
+
+## Release plan
+
+DogSpeak is already at v1.0.0 effectively (auto-deploys via GitHub Actions on every `main` push). To formalize:
+
+1. Tag a GitHub Release: `gh release create v1.0.0 --title "DogSpeak v1.0.0" --notes "First tagged release. See README + STATUS.md."` (in repo dir, branch main)
+2. Optional: add a `CHANGELOG.md` ahead of the tag
+3. Confirm Pages site still 200: `curl -sI https://sudarshanchaudhari.github.io/DogSpeak/ | head -1`
+
+### Deploy prerequisites
+**None.** Zero env vars required. Already live on GitHub Pages.
